@@ -3,12 +3,12 @@
 
 #include <QtGui>
 #include <QtNetwork>
-#include "ui_interface.h"
+#include "ui_main.h"
 #include "CThread.h"
 #include <vector>
 
 namespace nsCatac { class CFilm; }
-class Interface : public QMainWindow, public Ui::Interface
+class Interface : public QMainWindow, public Ui::Main
 {
     friend class CThread;
     Q_OBJECT
@@ -26,17 +26,19 @@ class Interface : public QMainWindow, public Ui::Interface
     void Write (std::string Cmd);
 
   public slots:
-    void on_butConnect_clicked();
-    void on_butDisconnect_clicked();
-    void on_butFind_clicked();
-    void on_butAdd_clicked();
-    void on__treeResult_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
+    void on_actionConnect_triggered();
+    //void on_butFind_clicked();
+    //void on_butAdd_clicked();
+    //void on__treeResult_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
     void on__liste_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
     void information (QString Msg);
     void information (int NumErr);
     void connected();
     void disconnected();
     void ready();
+
+    // Menu
+    void on_actionSettings_triggered();
     
     void changeImage (const QString &FilmName, const QByteArray Image);
 
@@ -45,6 +47,6 @@ class Interface : public QMainWindow, public Ui::Interface
 
 };
 
-#include "interface.hxx"
+#include "CMainWindow.hxx"
 
 #endif

@@ -15,6 +15,6 @@ MOC_DIR = ui/src
 RCC_DIR = ui/src
 
 # Input
-HEADERS += include/CFilm.h include/CFilm.hxx include/interface.h include/interface.hxx include/CThread.h include/CThread.hxx include/util.h include/CException.h include/CException.hxx
-FORMS += ui/interface.ui
-SOURCES += src/CFilm.cxx src/interface.cxx src/main.cxx src/CThread.cxx src/util.cxx
+HEADERS += include/CFilm.h include/CFilm.hxx include/CMainWindow.h include/CMainWindow.hxx include/CThread.h include/CThread.hxx include/util.h include/CException.h include/CException.hxx include/CKatalog.h include/CKatalog.hxx include/CSettingWindow.h
+FORMS += ui/main.ui ui/settings.ui ui/add.ui
+SOURCES += src/CFilm.cxx src/CMainWindow.cxx src/main.cxx src/CThread.cxx src/util.cxx src/CKatalog.cxx src/CSettingWindow.cxx

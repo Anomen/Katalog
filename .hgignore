@@ -1,0 +1,6 @@
+doc
+lib/*
+ui/include/*
+ui/src/*
+katalog.xml
+katalog

@@ -1,8 +1,9 @@
 #include "CThread.h"
 #include "CFilm.h"
+#include "CKatalog.h"
 #include "util.h"
 #include "CException.h"
-#include "interface.h"
+#include "CMainWindow.h"
 
 #include <iostream>
     
@@ -29,8 +30,8 @@ void CThread::run()
     _socket = new QTcpSocket;
     QObject::connect (_socket, SIGNAL(readyRead()), this, SLOT(ready()), Qt::DirectConnection);
 
-    _socket->connectToHost (_int->_serveur->text(), 
-            _int->_port->text().toInt());
+    _socket->connectToHost (QString::fromStdString(CKatalog::getInstance()->getServer()), 
+            CKatalog::getInstance()->getPort());
 
     if (_socket->waitForConnected(1000))
         connected();
