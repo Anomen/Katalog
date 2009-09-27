@@ -1,7 +1,9 @@
 <RCC>
-    <qresource prefix="/" >
-        <file>icon_connexion.png</file>
-        <file>icon_film.png</file>
-        <file>icon_stop.png</file>
-    </qresource>
+  <qresource prefix="/" >
+    <file>icon_katalog.png</file>
+    <file>icon_settings.png</file>
+    <file>icon_connexion.png</file>
+    <file>icon_film.png</file>
+    <file>icon_stop.png</file>
+  </qresource>
 </RCC>

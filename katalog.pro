@@ -13,6 +13,7 @@ UI_HEADERS_DIR = ui/include
 UI_SOURCES_DIR = ui/src
 MOC_DIR = ui/src
 RCC_DIR = ui/src
+TRANSLATIONS = lang/en_EN.ts
 
 # Input
 HEADERS += include/CFilm.h include/CFilm.hxx include/CMainWindow.h include/CMainWindow.hxx include/CThread.h include/CThread.hxx include/util.h include/CException.h include/CException.hxx include/CKatalog.h include/CKatalog.hxx include/CSettingWindow.h

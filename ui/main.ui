@@ -13,66 +13,146 @@
   <property name="windowTitle">
    <string>Katalog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="ressource.qrc">
+    <normaloff>:/icon_katalog.png</normaloff>:/icon_katalog.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="_2">
-      <item>
-       <widget class="QTreeWidget" name="_liste">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>50</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="indentation">
-         <number>0</number>
-        </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <column>
-         <property name="text">
-          <string>Titre</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="_texte">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabListe">
+       <attribute name="title">
+        <string>Liste</string>
+       </attribute>
+       <layout class="QHBoxLayout">
+        <item>
+         <layout class="QHBoxLayout" name="_2">
+          <item>
+           <widget class="QTreeWidget" name="_liste">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="indentation">
+             <number>0</number>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string>Titre</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="_texte">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabAdd">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Ajouter un film</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QComboBox" name="_engines"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="_name"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="butFind">
+              <property name="text">
+               <string>Rechercher</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTreeWidget" name="_treeResult">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <column>
+           <property name="text">
+            <string>Titre</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="_messageAdd">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="butAdd">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Ajouter</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -87,53 +167,91 @@
    </property>
    <widget class="QMenu" name="menuFichier">
     <property name="title">
-     <string>File</string>
+     <string>Fichier</string>
     </property>
     <addaction name="actionConnect"/>
+    <addaction name="actionSettings"/>
     <addaction name="separator"/>
     <addaction name="actionQuitter"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuAide">
     <property name="title">
-     <string>Edit</string>
+     <string>Aide</string>
     </property>
-    <addaction name="actionAdd"/>
-    <addaction name="actionDelete"/>
-    <addaction name="separator"/>
-    <addaction name="actionSettings"/>
+    <addaction name="actionA_propos"/>
    </widget>
    <addaction name="menuFichier"/>
-   <addaction name="menuEdit"/>
+   <addaction name="menuAide"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuitter">
    <property name="text">
-    <string>Quit</string>
+    <string>Quitter</string>
    </property>
   </action>
   <action name="actionSettings">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icon_settings.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Paramètres</string>
    </property>
   </action>
   <action name="actionConnect">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icon_connexion.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Connect</string>
+    <string>Connexion</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
-  <action name="actionAdd">
+  <action name="actionFran_ais">
    <property name="text">
-    <string>Add a film</string>
+    <string>Français</string>
    </property>
   </action>
-  <action name="actionDelete">
+  <action name="actionA_propos">
    <property name="text">
-    <string>Delete a film</string>
+    <string>A propos</string>
+   </property>
+  </action>
+  <action name="actionFrancais">
+   <property name="text">
+    <string>Français</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>English</string>
    </property>
   </action>
  </widget>
  <resources>
   <include location="ressource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>_name</sender>
+   <signal>returnPressed()</signal>
+   <receiver>butFind</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>173</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>576</x>
+     <y>96</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

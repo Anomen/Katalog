@@ -25,11 +25,14 @@ class Interface : public QMainWindow, public Ui::Main
 
     void Write (std::string Cmd);
 
+  protected:
+    void changeEvent(QEvent* event);
+
   public slots:
     void on_actionConnect_triggered();
-    //void on_butFind_clicked();
-    //void on_butAdd_clicked();
-    //void on__treeResult_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
+    void on_butFind_clicked();
+    void on_butAdd_clicked();
+    void on__treeResult_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
     void on__liste_currentItemChanged (QTreeWidgetItem *, QTreeWidgetItem *);
     void information (QString Msg);
     void information (int NumErr);
@@ -39,6 +42,7 @@ class Interface : public QMainWindow, public Ui::Main
 
     // Menu
     void on_actionSettings_triggered();
+    void on_actionQuitter_triggered();
     
     void changeImage (const QString &FilmName, const QByteArray Image);
 

@@ -1,18 +1,69 @@
+#include <iostream>
+
 #include "CKatalog.h"
 #include "CMainWindow.h"
 
-CKatalog * CKatalog::s_Instance = 0;
-const std::string CKatalog::s_ConfigFile = "katalog.xml";
+using std::cout;
+
+CKatalog *              CKatalog::s_Instance    = 0;
+const std::string       CKatalog::s_ConfigFile  = "katalog.xml";
+QTranslator *           CKatalog::s_Current     = 0;
+CKatalog::Translators_t CKatalog::s_Translators;
 
 CKatalog * CKatalog::getInstance()
 {
-    return s_Instance ? s_Instance : (s_Instance = new CKatalog);
+    char *argv[1];
+    int   argc = 1;
+    return s_Instance ? s_Instance : (s_Instance = new CKatalog(argc, argv));
 }
 
-CKatalog::CKatalog()
+void CKatalog::setLanguage(const QString& locale)
+{
+    // remove previous
+    if (s_Current)
+        removeTranslator(s_Current);
+
+    // install new
+    s_Current = s_Translators.value(locale, 0);
+    if (s_Current)
+        installTranslator(s_Current);
+}
+
+CKatalog::CKatalog(int& argc, char* argv[])
+    : QApplication(argc, argv)
 { 
     m_MainWindow = new Interface();
     m_MainWindow->show();
+
+    // Load translations
+    // <language>_<country>.qm
+    QDir dir ("./lang");
+    QString filter = "*_*.qm";
+    QDir::Filters filters = QDir::Files | QDir::Readable;
+    QDir::SortFlags sort = QDir::Name;
+    QFileInfoList entries = dir.entryInfoList(QStringList() << filter, filters, sort);
+    foreach (QFileInfo file, entries)
+    {
+        // pick country and language out of the file name
+        QStringList parts = file.baseName().split("_");
+        QString language = parts.at(parts.count() - 2).toLower();
+        QString country  = parts.at(parts.count() - 1).toUpper();
+
+        // construct and load translator
+        QTranslator* translator = new QTranslator(instance());
+        if (translator->load(file.absoluteFilePath()))
+        {
+            QString locale = language + "_" + country;
+            s_Translators.insert(locale, translator);
+        }
+    }
+
+    CKatalog::setLanguage(getDefaultLanguage());
+}
+
+const QStringList CKatalog::availableLanguages()
+{
+    return QStringList(s_Translators.keys());
 }
 
 std::string CKatalog::getServer() const throw()
@@ -28,6 +79,21 @@ std::string CKatalog::getServer() const throw()
 
     file.close();
     return server.toStdString();
+}
+
+QString CKatalog::getDefaultLanguage() const throw()
+{
+    QString lang;
+    QFile file (QString::fromUtf8 (CKatalog::s_ConfigFile.c_str()));
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return 0;
+
+    QTextStream in(&file);
+    in >> lang >> lang >> lang;
+
+    file.close();
+    return lang;
 }
 
 int CKatalog::getPort() const throw()

@@ -5,10 +5,15 @@
 
 int main (int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    //QApplication app(argc, argv);
 
-    CKatalog::getInstance();
+    //CKatalog::translator.load("lang/katalog_en");
+    //app.installTranslator(&CKatalog::translator);
+
+    //CKatalog::getInstance();
     
-    return app.exec();
+    return CKatalog::getInstance()->exec();
+    
+    //return app.exec();
 
 }

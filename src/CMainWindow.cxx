@@ -66,6 +66,10 @@ void Interface::on_actionConnect_triggered()
         _thr->terminate();
         _VFilms.clear();
         _socket->disconnectFromHost();
+        
+        // On interdit l'ajout
+        //======================
+        tabAdd->setEnabled(false);
     }
     else
     {
@@ -74,30 +78,51 @@ void Interface::on_actionConnect_triggered()
         _socket->connectToHost (QString::fromStdString(CKatalog::getInstance()->getServer()), CKatalog::getInstance()->getPort());
         Write ("LIST");
 
-        if (!_socket->waitForReadyRead (5000))
+        if (!_socket->waitForReadyRead (15000))
+            return information ("Le serveur ne répond pas.");
+        else
+        {
+            QTextStream stream (QString(_resultat).toStdString().c_str());
+            while (!stream.atEnd())
+            {
+                QString line = stream.readLine();
+                if (line.size() == 0) continue;
+
+                int i (line.indexOf (" "));
+                int Num (line.left (i).toInt());
+
+                line.remove (0, i+1);
+
+                CFilm *F = new CFilm(
+                        QString(line.toUtf8()).toStdString(), Num);
+
+                _liste->addTopLevelItem (F);
+                _VFilms.push_back (F);
+
+            }
+        }
+
+        // On permet l'ajout
+        //======================
+        tabAdd->setEnabled(true);
+        butAdd->setEnabled(false);
+
+        // On met à jour la liste des engines
+        //===================================
+        Write ("ENGINES");
+
+        if (!_socket->waitForReadyRead (15000))
             return information ("Le serveur ne répond pas.");
 
         QTextStream stream (QString(_resultat).toStdString().c_str());
+        int i (0);
         while (!stream.atEnd())
         {
             QString line = stream.readLine();
             if (line.size() == 0) continue;
 
-            int i (line.indexOf (" "));
-            int Num (line.left (i).toInt());
-
-            line.remove (0, i+1);
-
-            CFilm *F = new CFilm (QString(line.toUtf8()).toStdString(), Num);
-            _liste->addTopLevelItem (F);
-            _VFilms.push_back (F);
-
+            _engines->insertItem (i++, line);
         }
-
-        // On permet l'ajout
-        //======================
-        //tabAdd->setEnabled(true);
-        //butAdd->setEnabled(false);
 
         _thr->start();
     }
@@ -114,7 +139,8 @@ void Interface::disconnected()
 
     _texte->clear();
     _liste->clear();
-    //_treeResult->clear();
+    _treeResult->clear();
+    _engines->clear();
 }
 
 void Interface::ready()
@@ -129,56 +155,64 @@ void Interface::ready()
 
 }
 
-//void Interface::on_butFind_clicked()
-//{
-//    _messageAdd->setText (QString::fromUtf8("Recherche en cours..."));
-//    _treeResult->clear();
-//    butAdd->setEnabled(false);
-//    Write ("SEARCH " + _name->text().toStdString());
-//
-//    if (!_socket->waitForReadyRead (5000))
-//        return information ("Le serveur ne répond pas.");
-//
-//    QTextStream stream (QString(_resultat).toStdString().c_str());
-//    while (!stream.atEnd())
-//    {
-//        QString line = stream.readLine();
-//        if (line.size() == 0) continue;
-//
-//        int i (line.indexOf (" "));
-//        int Num (line.left (i).toInt());
-//
-//        line.remove (0, i+1);
-//
-//        CFilm *F = new CFilm (QString(line.toUtf8()).toStdString(), Num);
-//        _treeResult->addTopLevelItem (F);
-//
-//    }
-//
-//    _messageAdd->setText (QString::fromUtf8(""));
-//}
-//
-//void Interface::on_butAdd_clicked()
-//{
-//    _messageAdd->setText (QString::fromUtf8("Ajout en cours..."));
-//    CFilm *F = reinterpret_cast<CFilm *> (_treeResult->currentItem());
-//
-//    ostringstream oss;
-//    oss << "ADD " << F->GetTitre() << " " << 1;// F->GetNum();
-//    Write (oss.str());
-//
-//    if (!_socket->waitForReadyRead (5000))
-//        return information ("Le serveur ne répond pas.");
-//
-//    _VFilms.push_back (F);
-//    _liste->addTopLevelItem (F);
-//    _messageAdd->setText (QString::fromUtf8((F->GetTitre() + " ajouté.").c_str()));
-//}
+void Interface::on_butFind_clicked()
+{
+    _messageAdd->setText (QString::fromUtf8("Recherche en cours..."));
+    _treeResult->clear();
+    butAdd->setEnabled(false);
+    Write ("SEARCH " + _engines->currentText().toStdString() + " " +
+            _name->text().toStdString());
 
-//void Interface::on__treeResult_currentItemChanged (QTreeWidgetItem *Item, QTreeWidgetItem *)
-//{
-//    butAdd->setEnabled(true);
-//}
+    if (!_socket->waitForReadyRead (15000))
+        return information ("Le serveur ne répond pas.");
+
+    QTextStream stream (QString(_resultat).toStdString().c_str());
+    while (!stream.atEnd())
+    {
+        QString line = stream.readLine();
+        if (line.size() == 0) continue;
+
+        int i (line.indexOf (" "));
+        int Num (line.left (i).toInt());
+
+        line.remove (0, i+1);
+
+        CFilm *F = new CFilm (QString(line.toUtf8()).toStdString(), Num);
+        _treeResult->addTopLevelItem (F);
+
+    }
+
+    _messageAdd->setText (QString::fromUtf8(""));
+}
+
+void Interface::on_butAdd_clicked()
+{
+    _messageAdd->setText (QString::fromUtf8("Ajout en cours..."));
+    CFilm *F = new CFilm (
+        reinterpret_cast<CFilm *> (_treeResult->currentItem())->
+            GetTitre(),
+        1);
+
+    ostringstream oss;
+    oss << "ADD "
+        << _engines->currentText().toStdString() << " " 
+        << F->GetTitre() << " " 
+        << 1;// F->GetNum();
+    Write (oss.str());
+
+    if (!_socket->waitForReadyRead (15000))
+        return information ("Le serveur ne répond pas.");
+
+    _VFilms.push_back (F);
+    _liste->addTopLevelItem (F);
+    _thr->askServer (QString::fromStdString(F->GetTitre().c_str()));
+    _messageAdd->setText (QString::fromUtf8((F->GetTitre() + " ajouté.").c_str()));
+}
+
+void Interface::on__treeResult_currentItemChanged (QTreeWidgetItem *Item, QTreeWidgetItem *)
+{
+    butAdd->setEnabled(true);
+}
 
 void Interface::on__liste_currentItemChanged (QTreeWidgetItem *Item, QTreeWidgetItem *)
 {
@@ -188,7 +222,7 @@ void Interface::on__liste_currentItemChanged (QTreeWidgetItem *Item, QTreeWidget
     string Req ("SHOW " + F->GetTitre());
     Write (Req);
 
-    if (!_socket->waitForReadyRead (5000))
+    if (!_socket->waitForReadyRead (15000))
         return information ("Le serveur ne répond pas.");
 
     F->fromReq (QString(_resultat).toStdString());
@@ -226,8 +260,28 @@ void Interface::changeImage (const QString &FilmName, const QByteArray Image)
 
 }
 
+void Interface::on_actionQuitter_triggered()
+{
+    CKatalog::getInstance()->quit();
+}
+
 void Interface::on_actionSettings_triggered()
 {
     CSettingWindow * Win = new CSettingWindow (this);
     Win->show();
+}
+
+void Interface::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        // apply the new language
+
+        // all designed forms have retranslateUi() method
+        retranslateUi(this);
+
+        // retranslate other widgets which weren't added in the designer
+        //retranslate();
+    }
+    QMainWindow::changeEvent(event);
 }
