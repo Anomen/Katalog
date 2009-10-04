@@ -1,6 +1,6 @@
-doc
-lib/*
-ui/include/*
-ui/src/*
-katalog.xml
-katalog
+^doc$
+lib/*.o$
+ui/include/*.h$
+ui/src/*.cpp$
+^katalog.xml$
+^katalog$
