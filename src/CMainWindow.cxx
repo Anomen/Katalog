@@ -145,6 +145,7 @@ void Interface::disconnected()
 
 void Interface::ready()
 {
+    _resultat = "-1";
     try {
         _resultat = nsUtil::Read (_socket);
 
@@ -188,25 +189,30 @@ void Interface::on_butFind_clicked()
 void Interface::on_butAdd_clicked()
 {
     _messageAdd->setText (QString::fromUtf8("Ajout en cours..."));
-    CFilm *F = new CFilm (
-        reinterpret_cast<CFilm *> (_treeResult->currentItem())->
-            GetTitre(),
-        1);
+    CFilm *F = new CFilm (* reinterpret_cast<CFilm *> (_treeResult->currentItem()));
 
     ostringstream oss;
     oss << "ADD "
         << _engines->currentText().toStdString() << " " 
-        << F->GetTitre() << " " 
-        << 1;// F->GetNum();
+        << _name->text().toStdString() << " " 
+        //<< F->GetTitre() << " " 
+        << F->GetNum();
     Write (oss.str());
 
     if (!_socket->waitForReadyRead (15000))
         return information ("Le serveur ne répond pas.");
-
+    
     _VFilms.push_back (F);
     _liste->addTopLevelItem (F);
     _thr->askServer (QString::fromStdString(F->GetTitre().c_str()));
     _messageAdd->setText (QString::fromUtf8((F->GetTitre() + " ajouté.").c_str()));
+    //else if (_resultat != "-1")
+    //{
+    //    _VFilms.push_back (F);
+    //    _liste->addTopLevelItem (F);
+    //    _thr->askServer (QString::fromStdString(F->GetTitre().c_str()));
+    //    _messageAdd->setText (QString::fromUtf8((F->GetTitre() + " ajouté.").c_str()));
+    //}
 }
 
 void Interface::on__treeResult_currentItemChanged (QTreeWidgetItem *Item, QTreeWidgetItem *)
@@ -231,23 +237,10 @@ void Interface::on__liste_currentItemChanged (QTreeWidgetItem *Item, QTreeWidget
     _texte->setText (QString::fromUtf8 (F->Affich().c_str()));
 }
 
-//void Interface::on_butDisconnect_clicked()
-//{
-//    _thr->terminate();
-//    _VFilms.clear();
-//    _socket->disconnectFromHost();
-//
-//    // On interdit l'ajout
-//    //======================
-//    tabAdd->setEnabled(false);
-//}
-
 void Interface::changeImage (const QString &FilmName, const QByteArray Image)
 {
     CFilm *F = 0;
-    for (VFilms_t::iterator i = _VFilms.begin();
-            i < _VFilms.end();
-            i++)
+    for (VFilms_t::iterator i = _VFilms.begin(); i < _VFilms.end(); i++)
         if ((*i)->GetTitre() == FilmName.toStdString())
         {
             F = *i;
